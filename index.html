@@ -366,6 +366,12 @@ initTabs();refreshAll();renderTable();renderSummary();
 async function downloadPage(){
 const btn=document.getElementById('dlBtn');
 btn.style.display='none';
+// 修复html2canvas对-webkit-background-clip:text渐变文字的渲染问题
+const h1=document.querySelector('.header h1');
+const kpiVals=document.querySelectorAll('.kpi-value');
+const saved=[];
+if(h1){saved.push({el:h1,color:h1.style.color,wftc:h1.style.webkitTextFillColor,bg:h1.style.background});h1.style.background='none';h1.style.color='#64b5f6';h1.style.webkitTextFillColor='#64b5f6';}
+kpiVals.forEach(el=>{if(!el.style.color||el.style.color===''){saved.push({el:el,color:el.style.color,wftc:el.style.webkitTextFillColor,bg:el.style.background});el.style.background='none';el.style.color='#64b5f6';el.style.webkitTextFillColor='#64b5f6';}});
 try{
 const canvas=await html2canvas(document.documentElement,{
 backgroundColor:'#0c1929',
@@ -382,6 +388,8 @@ link.click();
 }catch(e){
 btn.style.display='';
 alert('下载失败：'+e.message);
+}finally{
+saved.forEach(s=>{if(s.color!==undefined)s.el.style.color=s.color;else s.el.style.color='';if(s.wftc!==undefined)s.el.style.webkitTextFillColor=s.wftc;else s.el.style.webkitTextFillColor='';if(s.bg!==undefined)s.el.style.background=s.bg;else s.el.style.background='';});
 }
 }
 </script>
