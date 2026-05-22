@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026年度集团全球入离职监测报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>Chart.defaults.plugins.datalabels={display:false};</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#0c1929 0%,#1a2a4a 50%,#0d2137 100%);color:#e0e8f0;min-height:100vh;padding:20px}
+.header{text-align:center;padding:30px 20px;margin-bottom:30px;background:linear-gradient(135deg,rgba(30,60,114,.8),rgba(42,82,152,.6));border-radius:16px;border:1px solid rgba(100,150,255,.2);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.header h1{font-size:28px;background:linear-gradient(90deg,#64b5f6,#42a5f5,#90caf9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.header .sub{color:#7eb8e0;font-size:14px}
+.section{background:linear-gradient(135deg,rgba(20,40,70,.9),rgba(25,50,85,.8));border-radius:16px;border:1px solid rgba(100,150,255,.15);margin-bottom:24px;box-shadow:0 4px 20px rgba(0,0,0,.2);overflow:hidden}
+.section-title{padding:18px 24px;font-size:18px;font-weight:600;background:linear-gradient(90deg,rgba(33,150,243,.15),transparent);border-bottom:1px solid rgba(100,150,255,.1);display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';width:4px;height:20px;background:linear-gradient(180deg,#42a5f5,#1e88e5);border-radius:2px}
+.action-btn{background:rgba(20,40,70,.6);color:#90b4d4;border:1px solid rgba(100,150,255,.2);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;transition:all .2s;margin-left:8px;white-space:nowrap}
+.action-btn:hover{background:rgba(30,60,100,.8);color:#b0d0f0;border-color:rgba(100,150,255,.4)}
+.action-btn:active{background:rgba(66,165,245,.3);color:#fff}
+.section-body{padding:20px 24px}
+.tab-bar{display:flex;flex-wrap:wrap;gap:8px;padding:14px 20px;margin-bottom:16px;background:rgba(30,60,100,.3);border-radius:10px;border:1px solid rgba(100,150,255,.1)}
+.tab-bar label{font-size:14px;color:#90b4d4;white-space:nowrap;margin-right:4px;display:flex;align-items:center}
+.tab-btn{background:rgba(20,40,70,.6);color:#90b4d4;border:1px solid rgba(100,150,255,.2);border-radius:6px;padding:6px 14px;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tab-btn:hover{background:rgba(30,60,100,.8);color:#b0d0f0;border-color:rgba(100,150,255,.4)}
+.tab-btn.active{background:rgba(66,165,245,.3);color:#fff;border-color:#42a5f5;box-shadow:0 0 8px rgba(66,165,245,.3)}
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-bottom:20px}
+.kpi-card{background:linear-gradient(135deg,rgba(30,60,100,.5),rgba(20,45,80,.5));border:1px solid rgba(100,150,255,.15);border-radius:12px;padding:20px 16px;text-align:center;transition:all .3s}
+.kpi-card:hover{border-color:rgba(66,165,245,.5);transform:translateY(-2px);box-shadow:0 6px 20px rgba(33,150,243,.15)}
+.kpi-label{font-size:13px;color:#7eb8e0;margin-bottom:10px}
+.kpi-value{font-size:28px;font-weight:700;background:linear-gradient(90deg,#64b5f6,#42a5f5);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.kpi-sub{font-size:12px;color:#5a8ab5;margin-top:6px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.chart-box{background:rgba(15,30,55,.5);border:1px solid rgba(100,150,255,.1);border-radius:12px;padding:16px}
+.chart-box h3{font-size:15px;color:#90b4d4;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(100,150,255,.08)}
+.chart-wrap{position:relative;height:320px}
+.detail-wrap{overflow-x:auto}
+.detail-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.detail-tbl th{background:rgba(30,60,100,.4);padding:12px 14px;text-align:center;color:#7eb8e0;font-weight:600;font-size:13px;border-bottom:2px solid rgba(100,150,255,.15);white-space:nowrap}
+.detail-tbl td{padding:10px 14px;text-align:center;border-bottom:1px solid rgba(100,150,255,.06)}
+.detail-tbl tr:hover{background:rgba(30,60,100,.2)}
+.detail-tbl .sum-r{background:rgba(33,150,243,.08);font-weight:600}
+.detail-tbl .sum-r td{color:#64b5f6;border-bottom:2px solid rgba(66,165,245,.2)}
+.rh{color:#ef5350!important}.rm{color:#ffa726!important}.rl{color:#66bb6a!important}
+.bu-row{cursor:pointer;user-select:none}
+.bu-row:hover{background:rgba(66,165,245,.18)!important}
+.expand-icon{display:inline-block;width:16px;transition:transform .25s;font-size:10px;color:#64b5f6;vertical-align:middle}
+.bu-row.expanded .expand-icon,.dept2-row.expanded .expand-icon{transform:rotate(90deg)}
+.dept2-row{cursor:pointer;user-select:none;display:none}
+.dept2-row:hover{background:rgba(66,165,245,.12)!important}
+.dept2-row td{padding:8px 14px;font-size:13px;border-bottom:1px solid rgba(100,150,255,.05)}
+.dept2-row.show{display:table-row}
+.dept3-row{display:none}
+.dept3-row td{padding:6px 14px;font-size:12px;border-bottom:1px solid rgba(100,150,255,.03)}
+.dept3-row:hover{background:rgba(30,60,100,.12)}
+.dept3-row.show{display:table-row}
+@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.charts-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.kpi-grid{grid-template-columns:repeat(2,1fr)}body{padding:12px}.header h1{font-size:20px}}
+.dl-btn{position:fixed;bottom:24px;right:24px;z-index:9999;background:linear-gradient(135deg,rgba(66,165,245,.9),rgba(30,136,229,.9));color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(33,150,243,.4);transition:all .25s;display:flex;align-items:center;gap:8px}
+.dl-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(33,150,243,.6);background:linear-gradient(135deg,rgba(66,165,245,1),rgba(30,136,229,1))}
+.dl-btn:active{transform:translateY(0)}
+.dl-btn svg{width:16px;height:16px;fill:currentColor}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>2026年度集团全球入离职监测报告</h1>
+<div class="sub">数据周期：2026.01.01 — 2026.04.30 ｜ 仅统计正式工</div>
+</div>
+
+<div class="section">
+<div class="section-title">数据分析摘要</div>
+<div class="section-body" id="summaryBody" style="line-height:2;font-size:14px"></div>
+</div>
+
+<div class="section">
+<div class="section-title">核心数据概览</div>
+<div class="section-body">
+<div class="kpi-grid" id="kpiGrid"></div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">离职人员多维度分析</div>
+<div class="section-body">
+<div class="tab-bar" id="deptTabs"><label>BU筛选：</label><span style="font-size:12px;color:#5a8ab5;margin-left:4px">（可多选）</span></div>
+<div class="charts-grid">
+<div class="chart-box"><h3 id="t1">绩效结果分布 <span style="background:rgba(66,165,245,.2);color:#64b5f6;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:400">2025年年度绩效结果</span></h3><div class="chart-wrap"><canvas id="c1"></canvas></div></div>
+<div class="chart-box"><h3 id="t2">人才盘点结果分布 <span style="background:rgba(66,165,245,.2);color:#64b5f6;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:400">2026年人才盘点结果</span></h3><div class="chart-wrap"><canvas id="c2"></canvas></div></div>
+<div class="chart-box"><h3 id="t3">司龄分布</h3><div class="chart-wrap"><canvas id="c3"></canvas></div></div>
+<div class="chart-box" style="grid-column:1/-1"><h3 id="t5">主动/被动离职 <span style="background:rgba(66,165,245,.2);color:#64b5f6;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:400">离职原因分布</span></h3><div style="display:flex;gap:20px;align-items:center"><div style="flex:0 0 280px"><div class="chart-wrap" style="height:260px"><canvas id="c5"></canvas></div></div><div style="flex:1"><div class="chart-wrap" style="height:420px"><canvas id="c4"></canvas></div></div></div><div style="margin-top:12px;padding:10px 14px;background:rgba(30,60,100,.2);border-radius:8px;font-size:13px;color:#90b4d4;line-height:1.8"><strong>主动离职</strong>：除被动离职外的所有原因&nbsp;&nbsp;&nbsp;&nbsp;<strong>被动离职</strong>：能力不足、人员优化、协商一致、工作态度</div></div>
+</div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">BU明细表<span style="flex:1"></span><button class="action-btn" onclick="expandAll()">全部展开</button><button class="action-btn" onclick="collapseAll()">全部收起</button></div>
+<div class="section-body">
+<div class="detail-wrap">
+<table class="detail-tbl">
+<thead><tr><th style="width:11%">BU</th><th style="width:11%">二级部门</th><th style="width:12%">三级部门</th><th>年初人数</th><th>入职人数</th><th>离职人数</th><th>净增人数</th><th>期末在职</th><th>离职率</th></tr></thead>
+<tbody id="tblBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<script>
+const D={"total":{"start":6730,"hire":1655,"leave":992,"transfer":6,"perf_high":10,"perf_mid":135,"perf_low":127,"perf_none":720,"talent_high":17,"talent_stable":78,"talent_follow":137,"talent_none":760,"tenure_probation":401,"tenure_0_1":381,"tenure_1_3":144,"tenure_3_5":46,"tenure_5plus":20,"reasons":[{"name":"发展因素","count":323,"pct":32.6},{"name":"能力不足","count":181,"pct":18.2},{"name":"家庭因素","count":118,"pct":11.9},{"name":"工作内容","count":84,"pct":8.5},{"name":"人员优化","count":63,"pct":6.4},{"name":"身体因素","count":47,"pct":4.7},{"name":"协商一致","count":38,"pct":3.8},{"name":"工作态度","count":37,"pct":3.7},{"name":"其它原因","count":26,"pct":2.6},{"name":"其他","count":24,"pct":2.4},{"name":"薪资因素","count":21,"pct":2.1},{"name":"环境氛围","count":15,"pct":1.5},{"name":"证件因素","count":13,"pct":1.3},{"name":"审计处罚","count":2,"pct":0.2}],"net":657,"end":7387,"turnover_rate":11.8,"perf_high_pct":1.0,"perf_mid_pct":13.6,"perf_low_pct":12.8,"perf_none_pct":72.6,"talent_high_pct":1.7,"talent_stable_pct":7.9,"talent_follow_pct":13.8,"talent_none_pct":76.6,"tenure_probation_pct":40.4,"tenure_0_1_pct":38.4,"tenure_1_3_pct":14.5,"tenure_3_5_pct":4.6,"tenure_5plus_pct":2.0},"departments":[{"name":"LBU","summary":{"start":1195,"hire":284,"leave":163,"transfer":1,"perf_high":1,"perf_mid":34,"perf_low":49,"perf_none":79,"talent_high":4,"talent_stable":19,"talent_follow":49,"talent_none":91,"tenure_probation":62,"tenure_0_1":32,"tenure_1_3":35,"tenure_3_5":22,"tenure_5plus":12,"reasons":[{"name":"发展因素","count":48,"pct":29.4},{"name":"能力不足","count":29,"pct":17.8},{"name":"人员优化","count":20,"pct":12.3},{"name":"家庭因素","count":17,"pct":10.4},{"name":"协商一致","count":13,"pct":8.0},{"name":"身体因素","count":11,"pct":6.7},{"name":"工作内容","count":10,"pct":6.1},{"name":"其他","count":9,"pct":5.5},{"name":"薪资因素","count":3,"pct":1.8},{"name":"环境氛围","count":2,"pct":1.2},{"name":"证件因素","count":1,"pct":0.6}],"net":84,"end":1279,"turnover_rate":11.3,"perf_high_pct":0.6,"perf_mid_pct":20.9,"perf_low_pct":30.1,"perf_none_pct":48.5,"talent_high_pct":2.5,"talent_stable_pct":11.7,"talent_follow_pct":30.1,"talent_none_pct":55.8,"tenure_probation_pct":38.0,"tenure_0_1_pct":19.6,"tenure_1_3_pct":21.5,"tenure_3_5_pct":13.5,"tenure_5plus_pct":7.4,"dept2":"LBU","dept3":"小计"},"subs":[]},{"name":"FBU","summary":{"start":2167,"hire":380,"leave":256,"transfer":0,"perf_high":3,"perf_mid":34,"perf_low":25,"perf_none":194,"talent_high":3,"talent_stable":18,"talent_follow":24,"talent_none":211,"tenure_probation":99,"tenure_0_1":91,"tenure_1_3":44,"tenure_3_5":14,"tenure_5plus":8,"reasons":[{"name":"发展因素","count":71,"pct":27.7},{"name":"家庭因素","count":57,"pct":22.3},{"name":"能力不足","count":40,"pct":15.6},{"name":"人员优化","count":20,"pct":7.8},{"name":"工作内容","count":19,"pct":7.4},{"name":"身体因素","count":15,"pct":5.9},{"name":"工作态度","count":14,"pct":5.5},{"name":"薪资因素","count":9,"pct":3.5},{"name":"证件因素","count":4,"pct":1.6},{"name":"其他","count":3,"pct":1.2},{"name":"协商一致","count":2,"pct":0.8},{"name":"其它原因","count":1,"pct":0.4},{"name":"环境氛围","count":1,"pct":0.4}],"net":123,"end":2290,"turnover_rate":10.1,"perf_high_pct":1.2,"perf_mid_pct":13.3,"perf_low_pct":9.8,"perf_none_pct":75.8,"talent_high_pct":1.2,"talent_stable_pct":7.0,"talent_follow_pct":9.4,"talent_none_pct":82.4,"tenure_probation_pct":38.7,"tenure_0_1_pct":35.5,"tenure_1_3_pct":17.2,"tenure_3_5_pct":5.5,"tenure_5plus_pct":3.1,"dept2":"FBU","dept3":"小计"},"subs":[]},{"name":"ABU","summary":{"start":213,"hire":115,"leave":59,"transfer":3,"perf_high":0,"perf_mid":4,"perf_low":5,"perf_none":50,"talent_high":0,"talent_stable":0,"talent_follow":4,"talent_none":55,"tenure_probation":52,"tenure_0_1":4,"tenure_1_3":2,"tenure_3_5":1,"tenure_5plus":0,"reasons":[{"name":"能力不足","count":35,"pct":59.3},{"name":"发展因素","count":13,"pct":22.0},{"name":"家庭因素","count":4,"pct":6.8},{"name":"人员优化","count":3,"pct":5.1},{"name":"其他","count":2,"pct":3.4},{"name":"身体因素","count":1,"pct":1.7},{"name":"协商一致","count":1,"pct":1.7}],"net":53,"end":266,"turnover_rate":18.2,"perf_high_pct":0.0,"perf_mid_pct":6.8,"perf_low_pct":8.5,"perf_none_pct":84.7,"talent_high_pct":0.0,"talent_stable_pct":0.0,"talent_follow_pct":6.8,"talent_none_pct":93.2,"tenure_probation_pct":88.1,"tenure_0_1_pct":6.8,"tenure_1_3_pct":3.4,"tenure_3_5_pct":1.7,"tenure_5plus_pct":0.0,"dept2":"ABU","dept3":"小计"},"subs":[]},{"name":"PBU","summary":{"start":433,"hire":54,"leave":62,"transfer":0,"perf_high":1,"perf_mid":14,"perf_low":5,"perf_none":42,"talent_high":3,"talent_stable":11,"talent_follow":6,"talent_none":42,"tenure_probation":12,"tenure_0_1":40,"tenure_1_3":7,"tenure_3_5":3,"tenure_5plus":0,"reasons":[{"name":"其它原因","count":22,"pct":35.5},{"name":"能力不足","count":13,"pct":21.0},{"name":"工作内容","count":8,"pct":12.9},{"name":"人员优化","count":6,"pct":9.7},{"name":"家庭因素","count":6,"pct":9.7},{"name":"工作态度","count":3,"pct":4.8},{"name":"发展因素","count":2,"pct":3.2},{"name":"其他","count":1,"pct":1.6},{"name":"身体因素","count":1,"pct":1.6}],"net":-6,"end":427,"turnover_rate":12.7,"perf_high_pct":1.6,"perf_mid_pct":22.6,"perf_low_pct":8.1,"perf_none_pct":67.7,"talent_high_pct":4.8,"talent_stable_pct":17.7,"talent_follow_pct":9.7,"talent_none_pct":67.7,"tenure_probation_pct":19.4,"tenure_0_1_pct":64.5,"tenure_1_3_pct":11.3,"tenure_3_5_pct":4.8,"tenure_5plus_pct":0.0,"dept2":"PBU","dept3":"小计"},"subs":[]},{"name":"GEU","summary":{"start":602,"hire":207,"leave":129,"transfer":2,"perf_high":2,"perf_mid":16,"perf_low":7,"perf_none":104,"talent_high":3,"talent_stable":8,"talent_follow":14,"talent_none":104,"tenure_probation":44,"tenure_0_1":64,"tenure_1_3":21,"tenure_3_5":0,"tenure_5plus":0,"reasons":[{"name":"发展因素","count":80,"pct":62.0},{"name":"能力不足","count":14,"pct":10.9},{"name":"协商一致","count":13,"pct":10.1},{"name":"工作内容","count":6,"pct":4.7},{"name":"其他","count":5,"pct":3.9},{"name":"薪资因素","count":3,"pct":2.3},{"name":"身体因素","count":2,"pct":1.6},{"name":"人员优化","count":2,"pct":1.6},{"name":"工作态度","count":1,"pct":0.8},{"name":"证件因素","count":1,"pct":0.8},{"name":"家庭因素","count":1,"pct":0.8},{"name":"环境氛围","count":1,"pct":0.8}],"net":87,"end":689,"turnover_rate":15.8,"perf_high_pct":1.6,"perf_mid_pct":12.4,"perf_low_pct":5.4,"perf_none_pct":80.6,"talent_high_pct":2.3,"talent_stable_pct":6.2,"talent_follow_pct":10.9,"talent_none_pct":80.6,"tenure_probation_pct":34.1,"tenure_0_1_pct":49.6,"tenure_1_3_pct":16.3,"tenure_3_5_pct":0.0,"tenure_5plus_pct":0.0,"dept2":"GEU","dept3":"小计"},"subs":[]},{"name":"GUS","summary":{"start":1143,"hire":461,"leave":229,"transfer":0,"perf_high":1,"perf_mid":18,"perf_low":15,"perf_none":195,"talent_high":3,"talent_stable":10,"talent_follow":21,"talent_none":195,"tenure_probation":100,"tenure_0_1":114,"tenure_1_3":14,"tenure_3_5":1,"tenure_5plus":0,"reasons":[{"name":"发展因素","count":75,"pct":32.8},{"name":"工作内容","count":34,"pct":14.8},{"name":"能力不足","count":33,"pct":14.4},{"name":"家庭因素","count":26,"pct":11.4},{"name":"工作态度","count":19,"pct":8.3},{"name":"环境氛围","count":9,"pct":3.9},{"name":"身体因素","count":9,"pct":3.9},{"name":"人员优化","count":9,"pct":3.9},{"name":"证件因素","count":7,"pct":3.1},{"name":"薪资因素","count":6,"pct":2.6},{"name":"其他","count":2,"pct":0.9}],"net":259,"end":1402,"turnover_rate":14.0,"perf_high_pct":0.4,"perf_mid_pct":7.9,"perf_low_pct":6.6,"perf_none_pct":85.2,"talent_high_pct":1.3,"talent_stable_pct":4.4,"talent_follow_pct":9.2,"talent_none_pct":85.2,"tenure_probation_pct":43.7,"tenure_0_1_pct":49.8,"tenure_1_3_pct":6.1,"tenure_3_5_pct":0.4,"tenure_5plus_pct":0.0,"dept2":"GUS","dept3":"小计"},"subs":[]},{"name":"HQU_HRAS","summary":{"start":369,"hire":82,"leave":53,"transfer":0,"perf_high":1,"perf_mid":8,"perf_low":4,"perf_none":40,"talent_high":0,"talent_stable":7,"talent_follow":6,"talent_none":40,"tenure_probation":26,"tenure_0_1":17,"tenure_1_3":9,"tenure_3_5":1,"tenure_5plus":0,"reasons":[{"name":"发展因素","count":18,"pct":34.0},{"name":"能力不足","count":12,"pct":22.6},{"name":"协商一致","count":7,"pct":13.2},{"name":"家庭因素","count":4,"pct":7.5},{"name":"身体因素","count":4,"pct":7.5},{"name":"工作内容","count":3,"pct":5.7},{"name":"环境氛围","count":2,"pct":3.8},{"name":"其它原因","count":1,"pct":1.9},{"name":"审计处罚","count":1,"pct":1.9},{"name":"人员优化","count":1,"pct":1.9}],"net":25,"end":394,"turnover_rate":11.9,"perf_high_pct":1.9,"perf_mid_pct":15.1,"perf_low_pct":7.5,"perf_none_pct":75.5,"talent_high_pct":0.0,"talent_stable_pct":13.2,"talent_follow_pct":11.3,"talent_none_pct":75.5,"tenure_probation_pct":49.1,"tenure_0_1_pct":32.1,"tenure_1_3_pct":17.0,"tenure_3_5_pct":1.9,"tenure_5plus_pct":0.0,"dept2":"HQU_HRAS","dept3":"小计"},"subs":[]},{"name":"HQU_FES","summary":{"start":502,"hire":65,"leave":38,"transfer":0,"perf_high":1,"perf_mid":7,"perf_low":14,"perf_none":16,"talent_high":1,"talent_stable":5,"talent_follow":11,"talent_none":21,"tenure_probation":6,"tenure_0_1":16,"tenure_1_3":12,"tenure_3_5":4,"tenure_5plus":0,"reasons":[{"name":"发展因素","count":16,"pct":42.1},{"name":"能力不足","count":5,"pct":13.2},{"name":"工作内容","count":4,"pct":10.5},{"name":"家庭因素","count":3,"pct":7.9},{"name":"身体因素","count":3,"pct":7.9},{"name":"其它原因","count":2,"pct":5.3},{"name":"协商一致","count":2,"pct":5.3},{"name":"其他","count":2,"pct":5.3},{"name":"人员优化","count":1,"pct":2.6}],"net":29,"end":531,"turnover_rate":6.7,"perf_high_pct":2.6,"perf_mid_pct":18.4,"perf_low_pct":36.8,"perf_none_pct":42.1,"talent_high_pct":2.6,"talent_stable_pct":13.2,"talent_follow_pct":28.9,"talent_none_pct":55.3,"tenure_probation_pct":15.8,"tenure_0_1_pct":42.1,"tenure_1_3_pct":31.6,"tenure_3_5_pct":10.5,"tenure_5plus_pct":0.0,"dept2":"HQU_FES","dept3":"小计"},"subs":[]},{"name":"HQU_技术部","summary":{"start":91,"hire":7,"leave":3,"transfer":0,"perf_high":0,"perf_mid":0,"perf_low":3,"perf_none":0,"talent_high":0,"talent_stable":0,"talent_follow":2,"talent_none":1,"tenure_probation":0,"tenure_0_1":3,"tenure_1_3":0,"tenure_3_5":0,"tenure_5plus":0,"reasons":[{"name":"人员优化","count":1,"pct":33.3},{"name":"身体因素","count":1,"pct":33.3},{"name":"审计处罚","count":1,"pct":33.3}],"net":3,"end":94,"turnover_rate":3.1,"perf_high_pct":0.0,"perf_mid_pct":0.0,"perf_low_pct":100.0,"perf_none_pct":0.0,"talent_high_pct":0.0,"talent_stable_pct":0.0,"talent_follow_pct":66.7,"talent_none_pct":33.3,"tenure_probation_pct":0.0,"tenure_0_1_pct":100.0,"tenure_1_3_pct":0.0,"tenure_3_5_pct":0.0,"tenure_5plus_pct":0.0,"dept2":"HQU_技术部","dept3":"小计"},"subs":[]},{"name":"HQU_其他","summary":{"start":15,"hire":0,"leave":0,"transfer":0,"perf_high":0,"perf_mid":0,"perf_low":0,"perf_none":0,"talent_high":0,"talent_stable":0,"talent_follow":0,"talent_none":0,"tenure_probation":0,"tenure_0_1":0,"tenure_1_3":0,"tenure_3_5":0,"tenure_5plus":0,"reasons":[],"net":0,"end":15,"turnover_rate":0.0,"perf_high_pct":0.0,"perf_mid_pct":0.0,"perf_low_pct":0.0,"perf_none_pct":0.0,"talent_high_pct":0.0,"talent_stable_pct":0.0,"talent_follow_pct":0.0,"talent_none_pct":0.0,"tenure_probation_pct":0.0,"tenure_0_1_pct":0.0,"tenure_1_3_pct":0.0,"tenure_3_5_pct":0.0,"tenure_5plus_pct":0.0,"dept2":"HQU_其他","dept3":"小计"},"subs":[]}]};
+
+const SUBDATA={"GEU":[{"name":"欧洲区","summary":{"start":602,"hire":207,"leave":129,"transfer":2,"net":76,"end":678,"turnover_rate":16.0},"dept3":[{"start":208,"hire":49,"leave":56,"transfer":2,"net":-9,"end":200,"turnover_rate":21.9,"name":"FR 法国区"},{"start":93,"hire":11,"leave":12,"transfer":0,"net":-1,"end":102,"turnover_rate":10.5,"name":"EU技术部"},{"start":89,"hire":33,"leave":15,"transfer":0,"net":18,"end":108,"turnover_rate":12.2,"name":"NL 荷兰区"},{"start":86,"hire":22,"leave":19,"transfer":0,"net":3,"end":86,"turnover_rate":18.1,"name":"CS 客户服务部"},{"start":57,"hire":76,"leave":19,"transfer":0,"net":57,"end":115,"turnover_rate":14.2,"name":"IT 意大利区"},{"start":13,"hire":4,"leave":3,"transfer":0,"net":1,"end":14,"turnover_rate":17.6,"name":"TM 终端管理部"},{"start":17,"hire":2,"leave":2,"transfer":0,"net":0,"end":18,"turnover_rate":10.0,"name":"ND 网络发展部"},{"start":0,"hire":1,"leave":0,"transfer":0,"net":1,"end":1,"turnover_rate":0.0,"name":"直挂"},{"start":8,"hire":2,"leave":1,"transfer":0,"net":1,"end":9,"turnover_rate":10.0,"name":"BM 品牌市场部"},{"start":0,"hire":2,"leave":0,"transfer":0,"net":2,"end":3,"turnover_rate":0.0,"name":"ES 西班牙区"},{"start":10,"hire":4,"leave":1,"transfer":0,"net":3,"end":13,"turnover_rate":7.1,"name":"IC 跨境客户部"},{"start":13,"hire":1,"leave":1,"transfer":0,"net":0,"end":13,"turnover_rate":7.1,"name":"TP 中转规划部"},{"start":8,"hire":0,"leave":0,"transfer":0,"net":0,"end":7,"turnover_rate":0.0,"name":"SD 战略运营部"}]}],"ABU":[{"name":"ABU航空事业部","summary":{"start":213,"hire":115,"leave":59,"transfer":3,"net":53,"end":266,"turnover_rate":18.2},"dept3":[{"start":4,"hire":0,"leave":0,"transfer":3,"net":-3,"end":1,"turnover_rate":0.0,"name":"深圳皓悦货代项目部"},{"start":18,"hire":7,"leave":6,"transfer":0,"net":1,"end":19,"turnover_rate":24.0,"name":"浙江站"},{"start":14,"hire":14,"leave":11,"transfer":0,"net":3,"end":17,"turnover_rate":39.3,"name":"江苏站"},{"start":35,"hire":20,"leave":11,"transfer":0,"net":9,"end":44,"turnover_rate":20.0,"name":"平台业务部"},{"start":22,"hire":12,"leave":5,"transfer":0,"net":7,"end":28,"turnover_rate":15.2,"name":"同行销售部"},{"start":23,"hire":13,"leave":0,"transfer":0,"net":13,"end":36,"turnover_rate":0.0,"name":"ABU技术部"},{"start":7,"hire":6,"leave":4,"transfer":0,"net":2,"end":9,"turnover_rate":30.8,"name":"指定货业务部"},{"start":16,"hire":7,"leave":6,"transfer":0,"net":1,"end":17,"turnover_rate":26.1,"name":"安徽站"},{"start":3,"hire":5,"leave":1,"transfer":0,"net":4,"end":7,"turnover_rate":12.5,"name":"品牌客户销售部"},{"start":9,"hire":4,"leave":3,"transfer":0,"net":1,"end":12,"turnover_rate":20.0,"name":"产品部"},{"start":29,"hire":14,"leave":4,"transfer":0,"net":10,"end":38,"turnover_rate":9.5,"name":"航线部"},{"start":17,"hire":8,"leave":6,"transfer":0,"net":2,"end":19,"turnover_rate":24.0,"name":"福建站"},{"start":6,"hire":2,"leave":0,"transfer":0,"net":2,"end":8,"turnover_rate":0.0,"name":"欧洲销售部"},{"start":0,"hire":1,"leave":0,"transfer":0,"net":1,"end":1,"turnover_rate":0.0,"name":"美国销售部"},{"start":3,"hire":1,"leave":0,"transfer":0,"net":1,"end":4,"turnover_rate":0.0,"name":"直挂"},{"start":5,"hire":1,"leave":0,"transfer":0,"net":1,"end":6,"turnover_rate":0.0,"name":"经营管理部"},{"start":2,"hire":0,"leave":2,"transfer":0,"net":-2,"end":0,"turnover_rate":100.0,"name":"广东站"}]}],"PBU":[{"name":"PBU口岸事业部","summary":{"start":433,"hire":54,"leave":62,"transfer":0,"net":-8,"end":425,"turnover_rate":12.7},"dept3":[{"start":17,"hire":4,"leave":3,"transfer":0,"net":1,"end":19,"turnover_rate":13.6,"name":"北美区"},{"start":71,"hire":18,"leave":17,"transfer":0,"net":1,"end":73,"turnover_rate":18.9,"name":"欧洲一区"},{"start":45,"hire":1,"leave":3,"transfer":0,"net":-2,"end":43,"turnover_rate":6.5,"name":"PBU技术部"},{"start":8,"hire":2,"leave":0,"transfer":0,"net":2,"end":10,"turnover_rate":0.0,"name":"销售客服部"},{"start":13,"hire":1,"leave":1,"transfer":0,"net":0,"end":13,"turnover_rate":7.1,"name":"交付运营部"},{"start":157,"hire":8,"leave":22,"transfer":0,"net":-14,"end":144,"turnover_rate":13.3,"name":"欧洲二区"},{"start":37,"hire":0,"leave":4,"transfer":0,"net":-4,"end":33,"turnover_rate":10.8,"name":"荷兰区AE"},{"start":34,"hire":11,"leave":8,"transfer":0,"net":3,"end":36,"turnover_rate":18.2,"name":"欧洲三区"},{"start":34,"hire":9,"leave":2,"transfer":0,"net":7,"end":41,"turnover_rate":4.7,"name":"四海捷运项目部"},{"start":7,"hire":0,"leave":1,"transfer":0,"net":-1,"end":6,"turnover_rate":14.3,"name":"日本区"},{"start":7,"hire":0,"leave":0,"transfer":0,"net":0,"end":6,"turnover_rate":0.0,"name":"经营管理部"},{"start":3,"hire":0,"leave":0,"transfer":0,"net":0,"end":3,"turnover_rate":0.0,"name":"澳洲区"},{"start":0,"hire":0,"leave":1,"transfer":0,"net":-1,"end":0,"turnover_rate":100.0,"name":"欧洲区"}]}],"HQU_FES":[{"name":"FES财经条线","summary":{"start":502,"hire":65,"leave":38,"transfer":0,"net":27,"end":529,"turnover_rate":6.7},"dept3":[{"start":38,"hire":9,"leave":8,"transfer":0,"net":1,"end":39,"turnover_rate":17.0,"name":"PBU财务部"},{"start":63,"hire":11,"leave":6,"transfer":0,"net":5,"end":67,"turnover_rate":8.2,"name":"LBU财务部"},{"start":32,"hire":4,"leave":4,"transfer":0,"net":0,"end":32,"turnover_rate":11.1,"name":"ABU财务部"},{"start":64,"hire":6,"leave":5,"transfer":0,"net":1,"end":64,"turnover_rate":7.2,"name":"FBU财务部"},{"start":9,"hire":1,"leave":0,"transfer":0,"net":1,"end":10,"turnover_rate":0.0,"name":"核算管理部"},{"start":125,"hire":27,"leave":10,"transfer":0,"net":17,"end":149,"turnover_rate":6.3,"name":"Gofo财务部"},{"start":49,"hire":2,"leave":3,"transfer":0,"net":-1,"end":48,"turnover_rate":5.9,"name":"FES技术部"},{"start":21,"hire":3,"leave":0,"transfer":0,"net":3,"end":24,"turnover_rate":0.0,"name":"LD 法务部"},{"start":4,"hire":0,"leave":0,"transfer":0,"net":0,"end":4,"turnover_rate":0.0,"name":"财务管理部"},{"start":68,"hire":1,"leave":1,"transfer":0,"net":0,"end":66,"turnover_rate":1.5,"name":"财务共享中心"},{"start":10,"hire":0,"leave":0,"transfer":0,"net":0,"end":10,"turnover_rate":0.0,"name":"综合项目管理部"},{"start":10,"hire":0,"leave":0,"transfer":0,"net":0,"end":10,"turnover_rate":0.0,"name":"资金管理部"},{"start":3,"hire":1,"leave":0,"transfer":0,"net":1,"end":3,"turnover_rate":0.0,"name":"BO 董事会办公室"},{"start":5,"hire":0,"leave":1,"transfer":0,"net":-1,"end":4,"turnover_rate":20.0,"name":"税务管理部"},{"start":1,"hire":0,"leave":0,"transfer":0,"net":0,"end":1,"turnover_rate":0.0,"name":"直挂"}]}],"HQU_HRAS":[{"name":"HRAS人力综合条线","summary":{"start":369,"hire":82,"leave":53,"transfer":0,"net":29,"end":398,"turnover_rate":11.8},"dept3":[{"start":24,"hire":1,"leave":3,"transfer":0,"net":-2,"end":22,"turnover_rate":12.0,"name":"PBU HRBP Dept."},{"start":36,"hire":5,"leave":2,"transfer":0,"net":3,"end":40,"turnover_rate":4.8,"name":"LBU HRBP Dept."},{"start":51,"hire":7,"leave":5,"transfer":0,"net":2,"end":51,"turnover_rate":8.9,"name":"ZT-HSSC"},{"start":8,"hire":2,"leave":0,"transfer":0,"net":2,"end":10,"turnover_rate":0.0,"name":"AD审计部"},{"start":76,"hire":12,"leave":6,"transfer":0,"net":6,"end":80,"turnover_rate":7.0,"name":"FBU HRBP Dept."},{"start":10,"hire":6,"leave":2,"transfer":0,"net":4,"end":13,"turnover_rate":13.3,"name":"ABU HRBP Dept."},{"start":11,"hire":3,"leave":2,"transfer":0,"net":1,"end":12,"turnover_rate":14.3,"name":"HQU HRBP Dept."},{"start":39,"hire":10,"leave":10,"transfer":0,"net":0,"end":40,"turnover_rate":20.0,"name":"GEU"},{"start":58,"hire":27,"leave":17,"transfer":0,"net":10,"end":67,"turnover_rate":20.2,"name":"GUS"},{"start":17,"hire":6,"leave":6,"transfer":0,"net":0,"end":17,"turnover_rate":26.1,"name":"GEU-HSSC"},{"start":6,"hire":2,"leave":0,"transfer":0,"net":2,"end":8,"turnover_rate":0.0,"name":"GUS-ASSC"},{"start":1,"hire":1,"leave":0,"transfer":0,"net":1,"end":2,"turnover_rate":0.0,"name":"直挂"},{"start":8,"hire":0,"leave":0,"transfer":0,"net":0,"end":8,"turnover_rate":0.0,"name":"HCOE专业支持部"},{"start":24,"hire":0,"leave":0,"transfer":0,"net":0,"end":24,"turnover_rate":0.0,"name":"ZT-ASSC"}]}],"LBU":[{"name":"LBU速运事业部","summary":{"start":1195,"hire":284,"leave":163,"transfer":1,"net":120,"end":1315,"turnover_rate":11.0},"dept3":[{"start":125,"hire":11,"leave":9,"transfer":1,"net":1,"end":126,"turnover_rate":6.7,"name":"中国操作部"},{"start":28,"hire":70,"leave":18,"transfer":0,"net":52,"end":86,"turnover_rate":17.3,"name":"第五纵队"},{"start":153,"hire":46,"leave":19,"transfer":0,"net":27,"end":177,"turnover_rate":9.7,"name":"第六纵队"},{"start":177,"hire":54,"leave":16,"transfer":0,"net":38,"end":214,"turnover_rate":7.0,"name":"共享运营中心"},{"start":197,"hire":40,"leave":30,"transfer":0,"net":10,"end":245,"turnover_rate":10.9,"name":"第四纵队"},{"start":35,"hire":6,"leave":3,"transfer":0,"net":3,"end":39,"turnover_rate":7.1,"name":"运力管理部"},{"start":31,"hire":20,"leave":11,"transfer":0,"net":9,"end":39,"turnover_rate":22.0,"name":"第一纵队"},{"start":57,"hire":9,"leave":4,"transfer":0,"net":5,"end":70,"turnover_rate":5.4,"name":"第七纵队"},{"start":93,"hire":5,"leave":12,"transfer":0,"net":-7,"end":84,"turnover_rate":12.5,"name":"欧洲质检项目部"},{"start":160,"hire":7,"leave":21,"transfer":0,"net":-14,"end":130,"turnover_rate":13.9,"name":"技术部"},{"start":20,"hire":3,"leave":2,"transfer":0,"net":1,"end":21,"turnover_rate":8.7,"name":"第三纵队"},{"start":13,"hire":9,"leave":8,"transfer":0,"net":1,"end":21,"turnover_rate":27.6,"name":"战略运营部"},{"start":2,"hire":1,"leave":0,"transfer":0,"net":1,"end":3,"turnover_rate":0.0,"name":"直挂"},{"start":22,"hire":1,"leave":2,"transfer":0,"net":-1,"end":21,"turnover_rate":8.7,"name":"第二纵队"},{"start":0,"hire":1,"leave":0,"transfer":0,"net":1,"end":3,"turnover_rate":0.0,"name":"客户体验部"},{"start":26,"hire":0,"leave":1,"transfer":0,"net":-1,"end":0,"turnover_rate":100.0,"name":"北美区"},{"start":56,"hire":1,"leave":7,"transfer":0,"net":-6,"end":0,"turnover_rate":100.0,"name":"亚太区"}]}],"FBU":[{"name":"FBU仓储事业部","summary":{"start":2167,"hire":380,"leave":256,"transfer":0,"net":124,"end":2291,"turnover_rate":10.1},"dept3":[{"start":713,"hire":169,"leave":133,"transfer":0,"net":36,"end":734,"turnover_rate":15.3,"name":"美洲区"},{"start":770,"hire":113,"leave":72,"transfer":0,"net":41,"end":789,"turnover_rate":8.4,"name":"欧洲区"},{"start":68,"hire":8,"leave":7,"transfer":0,"net":1,"end":68,"turnover_rate":9.3,"name":"战略运营部"},{"start":103,"hire":13,"leave":10,"transfer":0,"net":3,"end":106,"turnover_rate":8.6,"name":"销售支持部"},{"start":43,"hire":14,"leave":4,"transfer":0,"net":10,"end":54,"turnover_rate":6.9,"name":"头程运营部"},{"start":46,"hire":17,"leave":13,"transfer":0,"net":4,"end":87,"turnover_rate":13.0,"name":"渠道管理部"},{"start":43,"hire":8,"leave":2,"transfer":0,"net":6,"end":49,"turnover_rate":3.9,"name":"仓储运营部"},{"start":22,"hire":6,"leave":1,"transfer":0,"net":5,"end":27,"turnover_rate":3.6,"name":"仓储规划部"},{"start":153,"hire":4,"leave":4,"transfer":0,"net":0,"end":152,"turnover_rate":2.6,"name":"FBU技术部"},{"start":31,"hire":12,"leave":2,"transfer":0,"net":10,"end":41,"turnover_rate":4.7,"name":"海外销售部"},{"start":47,"hire":3,"leave":1,"transfer":0,"net":2,"end":47,"turnover_rate":2.1,"name":"亚太区"},{"start":26,"hire":2,"leave":1,"transfer":0,"net":1,"end":28,"turnover_rate":3.4,"name":"品牌客户部"},{"start":86,"hire":8,"leave":5,"transfer":0,"net":3,"end":90,"turnover_rate":5.3,"name":"国内销售部"},{"start":13,"hire":1,"leave":1,"transfer":0,"net":0,"end":13,"turnover_rate":7.1,"name":"战略客户部"},{"start":3,"hire":1,"leave":0,"transfer":0,"net":1,"end":4,"turnover_rate":0.0,"name":"直挂"},{"start":0,"hire":1,"leave":0,"transfer":0,"net":1,"end":1,"turnover_rate":0.0,"name":"管培组"}]}],"HQU_技术部":[{"name":"HQU技术部","summary":{"start":91,"hire":7,"leave":3,"transfer":0,"net":4,"end":94,"turnover_rate":3.1},"dept3":[]}],"GUS":[{"name":"美洲区","summary":{"start":1143,"hire":461,"leave":229,"transfer":0,"net":232,"end":1375,"turnover_rate":14.3},"dept3":[{"start":74,"hire":57,"leave":30,"transfer":0,"net":27,"end":101,"turnover_rate":22.9,"name":"TX 德州大区"},{"start":64,"hire":35,"leave":15,"transfer":0,"net":20,"end":85,"turnover_rate":15.0,"name":"MS 中南大区"},{"start":152,"hire":71,"leave":35,"transfer":0,"net":36,"end":188,"turnover_rate":15.7,"name":"WE 美西大区"},{"start":133,"hire":75,"leave":41,"transfer":0,"net":34,"end":167,"turnover_rate":19.7,"name":"NE 东北大区"},{"start":149,"hire":38,"leave":10,"transfer":0,"net":28,"end":180,"turnover_rate":5.3,"name":"DO 数字运营部"},{"start":66,"hire":46,"leave":21,"transfer":0,"net":25,"end":91,"turnover_rate":18.8,"name":"GL 大湖大区"},{"start":82,"hire":48,"leave":24,"transfer":0,"net":24,"end":103,"turnover_rate":18.9,"name":"Ground项目部"},{"start":4,"hire":2,"leave":0,"transfer":0,"net":2,"end":5,"turnover_rate":0.0,"name":"DM 派送管理部"},{"start":44,"hire":10,"leave":1,"transfer":0,"net":9,"end":55,"turnover_rate":1.8,"name":"QC 质量控制部"},{"start":128,"hire":10,"leave":13,"transfer":0,"net":-3,"end":125,"turnover_rate":9.4,"name":"CS 客户服务部"},{"start":104,"hire":35,"leave":23,"transfer":0,"net":12,"end":114,"turnover_rate":16.8,"name":"FL 佛州大区"},{"start":18,"hire":3,"leave":2,"transfer":0,"net":1,"end":19,"turnover_rate":9.5,"name":"AD 行政部"},{"start":9,"hire":4,"leave":1,"transfer":0,"net":3,"end":12,"turnover_rate":7.7,"name":"CM 运力管理部"},{"start":0,"hire":3,"leave":1,"transfer":0,"net":2,"end":25,"turnover_rate":3.8,"name":"BD 本地客户部"},{"start":7,"hire":2,"leave":2,"transfer":0,"net":0,"end":8,"turnover_rate":20.0,"name":"NP 网络规划部"},{"start":28,"hire":10,"leave":3,"transfer":0,"net":7,"end":35,"turnover_rate":7.9,"name":"OM 操作管理部"},{"start":7,"hire":7,"leave":1,"transfer":0,"net":6,"end":14,"turnover_rate":6.7,"name":"SM 站点管理部"},{"start":34,"hire":1,"leave":0,"transfer":0,"net":1,"end":35,"turnover_rate":0.0,"name":"IC 跨境客户部"},{"start":1,"hire":0,"leave":0,"transfer":0,"net":0,"end":1,"turnover_rate":0.0,"name":"直挂"},{"start":6,"hire":2,"leave":1,"transfer":0,"net":1,"end":7,"turnover_rate":12.5,"name":"BM 品牌市场部"},{"start":26,"hire":2,"leave":5,"transfer":0,"net":-3,"end":23,"turnover_rate":17.9,"name":"PR 波多黎各区"},{"start":7,"hire":0,"leave":0,"transfer":0,"net":0,"end":8,"turnover_rate":0.0,"name":"SM 战略管理部"},{"start":0,"hire":0,"leave":0,"transfer":0,"net":0,"end":1,"turnover_rate":0.0,"name":"CA 加拿大大区"}]}],"HQU_其他":[{"name":"PO总裁办","summary":{"start":3,"hire":0,"leave":0,"transfer":0,"net":0,"end":3,"turnover_rate":0.0},"dept3":[]},{"name":"投资部","summary":{"start":6,"hire":0,"leave":0,"transfer":0,"net":0,"end":6,"turnover_rate":0.0},"dept3":[]},{"name":"B.PRD品牌公关部","summary":{"start":6,"hire":0,"leave":0,"transfer":0,"net":0,"end":6,"turnover_rate":0.0},"dept3":[]}]};
+
+const CH={};
+const C={perf:['#66bb6a','#ffd600','#ef5350','#78909c'],talent:['#66bb6a','#ffd600','#ef5350','#78909c'],tenure:['#ef5350','#ffa726','#66bb6a','#42a5f5','#ab47bc'],reason:['#42a5f5','#66bb6a','#ef5350','#ab47bc','#26c6da','#ef5350','#ef5350','#8d6e63','#78909c','#ec407a','#7e57c2','#29b6f6','#d4e157']};
+const N=n=>n==null?'0':n.toLocaleString();
+const R=r=>r==null?'0%':r.toFixed(1)+'%';
+const selectedBUs=new Set(['all']);
+
+function aggregate(arr){
+if(arr.length===1)return arr[0];
+const a={start:0,hire:0,leave:0,transfer:0,net:0,end:0,perf_high:0,perf_mid:0,perf_low:0,perf_none:0,talent_high:0,talent_stable:0,talent_follow:0,talent_none:0,tenure_probation:0,tenure_0_1:0,tenure_1_3:0,tenure_3_5:0,tenure_5plus:0,reasonsMap:{}};
+arr.forEach(d=>{
+a.start+=d.start;a.hire+=d.hire;a.leave+=d.leave;a.transfer+=d.transfer;a.net+=d.net;a.end+=d.end;
+a.perf_high+=d.perf_high;a.perf_mid+=d.perf_mid;a.perf_low+=d.perf_low;a.perf_none+=d.perf_none;
+a.talent_high+=d.talent_high;a.talent_stable+=d.talent_stable;a.talent_follow+=d.talent_follow;a.talent_none+=d.talent_none;
+a.tenure_probation+=d.tenure_probation;a.tenure_0_1+=d.tenure_0_1;a.tenure_1_3+=d.tenure_1_3;a.tenure_3_5+=d.tenure_3_5;a.tenure_5plus+=d.tenure_5plus;
+(d.reasons||[]).forEach(r=>{a.reasonsMap[r.name]=(a.reasonsMap[r.name]||0)+r.count;});
+});
+const tLeave=a.leave;
+const perfTotal=a.perf_high+a.perf_mid+a.perf_low+a.perf_none||1;
+const talentTotal=a.talent_high+a.talent_stable+a.talent_follow+a.talent_none||1;
+const tenureTotal=a.tenure_probation+a.tenure_0_1+a.tenure_1_3+a.tenure_3_5+a.tenure_5plus||1;
+a.turnover_rate=tLeave>0?Math.round(tLeave/(tLeave+a.end)*1000)/10:0;
+a.perf_high_pct=Math.round(a.perf_high/perfTotal*1000)/10;
+a.perf_mid_pct=Math.round(a.perf_mid/perfTotal*1000)/10;
+a.perf_low_pct=Math.round(a.perf_low/perfTotal*1000)/10;
+a.perf_none_pct=Math.round(a.perf_none/perfTotal*1000)/10;
+a.talent_high_pct=Math.round(a.talent_high/talentTotal*1000)/10;
+a.talent_stable_pct=Math.round(a.talent_stable/talentTotal*1000)/10;
+a.talent_follow_pct=Math.round(a.talent_follow/talentTotal*1000)/10;
+a.talent_none_pct=Math.round(a.talent_none/talentTotal*1000)/10;
+a.tenure_probation_pct=Math.round(a.tenure_probation/tenureTotal*1000)/10;
+a.tenure_0_1_pct=Math.round(a.tenure_0_1/tenureTotal*1000)/10;
+a.tenure_1_3_pct=Math.round(a.tenure_1_3/tenureTotal*1000)/10;
+a.tenure_3_5_pct=Math.round(a.tenure_3_5/tenureTotal*1000)/10;
+a.tenure_5plus_pct=Math.round(a.tenure_5plus/tenureTotal*1000)/10;
+a.reasons=Object.keys(a.reasonsMap).map(k=>({name:k,count:a.reasonsMap[k],pct:Math.round(a.reasonsMap[k]/(tLeave||1)*1000)/10})).sort((x,y)=>y.count-x.count);
+return a;
+}
+
+function getSelected(){
+const sel=[...selectedBUs];
+if(sel.includes('all'))return{data:D.total,label:'全部'};
+const arr=sel.map(n=>D.departments.find(d=>d.name===n)).filter(Boolean).map(d=>d.summary);
+return{data:arr.length?aggregate(arr):D.total,label:sel.join(' + ')};
+}
+
+function renderKPI(d){
+d=d||getSelected().data;
+const g=document.getElementById('kpiGrid');
+const items=[
+{l:'26年年初人数',v:N(d.start),s:'1月1日在职'},
+{l:'26年入职人数',v:N(d.hire),s:'截至4月30日'},
+{l:'26年离职人数',v:N(d.leave),s:'截至4月30日'},
+{l:'净增人数',v:(d.net>=0?'+':'')+N(d.net),s2:'净增=入职-离职-调出',s:'调出=正式工转非正式工'},
+{l:'期末在职人数',v:N(d.end),s:'截至4月30日'},
+{l:'离职率',v:R(d.turnover_rate),s:'离职/(离职+期末在职)',red:true}
+];
+g.innerHTML=items.map(i=>'<div class="kpi-card"><div class="kpi-label">'+i.l+'</div><div class="kpi-value"'+(i.red?' style="background:none;-webkit-text-fill-color:#ef5350"':'')+'>'+i.v+'</div>'+(i.s2?'<div class="kpi-sub">'+i.s2+'</div>':'')+'<div class="kpi-sub">'+i.s+'</div></div>').join('');
+}
+
+function mkChart(id,type,labels,values,colors){
+const ctx=document.getElementById(id).getContext('2d');
+if(CH[id])CH[id].destroy();
+CH[id]=new Chart(ctx,{
+type,data:{labels,datasets:[{data:values,backgroundColor:colors,borderColor:'rgba(0,0,0,.1)',borderWidth:2,hoverOffset:8}]},
+options:{responsive:true,maintainAspectRatio:false,cutout:'40%',plugins:{legend:{position:'right',labels:{color:'#90b4d4',font:{size:12},padding:12,usePointStyle:true}},tooltip:{callbacks:{label:function(c){const t=c.dataset.data.reduce((a,b)=>a+b,0);const p=t>0?(c.parsed/t*100).toFixed(1):0;return c.label+': '+c.parsed+'人 ('+p+'%)'}}},datalabels:{color:'#fff',font:{size:11,weight:'bold'},textAlign:'center',formatter:function(v,ctx){const t=ctx.dataset.data.reduce((a,b)=>a+b,0);const p=t>0?(v/t*100).toFixed(1):0;return v+'人\n('+p+'%)';},display:function(ctx){return ctx.dataset.data[ctx.dataIndex]>0;}}}},animation:{animateRotate:true,duration:800},plugins:[ChartDataLabels]});
+}
+
+function mkBar(id,labels,values,pcts,colors){
+const ctx=document.getElementById(id).getContext('2d');
+if(CH[id])CH[id].destroy();
+const combined=labels.map((l,i)=>({l,v:values[i],p:pcts[i],c:colors[i]})).sort((a,b)=>b.v-a.v);
+const sLabels=combined.map(x=>x.l),sValues=combined.map(x=>x.v),sPcts=combined.map(x=>x.p),sColors=combined.map(x=>x.c);
+CH[id]=new Chart(ctx,{
+type:'bar',data:{labels:sLabels,datasets:[{label:'人数',data:sValues,backgroundColor:sColors.map(c=>c+'cc'),borderColor:sColors,borderWidth:1,borderRadius:4}]},
+options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',layout:{padding:{right:80}},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x+'人 ('+(sPcts[c.dataIndex]||0)+'%)'}}}},scales:{x:{grid:{color:'rgba(100,150,255,.08)'},ticks:{color:'#7eb8e0'}},y:{grid:{display:false},ticks:{color:'#90b4d4',font:{size:10},autoSkip:false,maxTicksLimit:50}}},animation:{duration:800}},
+plugins:[{afterDatasetsDraw:function(chart){
+const ctx2=chart.ctx;
+chart.data.datasets[0].data.forEach((val,i)=>{
+const meta=chart.getDatasetMeta(0);const bar=meta.data[i];
+ctx2.fillStyle='#b0d0f0';ctx2.font='12px sans-serif';ctx2.textAlign='left';ctx2.textBaseline='middle';
+ctx2.fillText(val+'人 ('+(sPcts[i]||0)+'%)',bar.x+6,bar.y);
+});
+}}]
+});
+}
+
+function refreshAll(){
+const{d,lb}=(()=>{const s=getSelected();return{d:s.data,lb:s.label};})();
+renderKPI(d);
+document.getElementById('t1').innerHTML=lb+' - 绩效结果分布 <span style="background:rgba(66,165,245,.2);color:#64b5f6;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:400">2025年年度绩效结果</span>';
+mkChart('c1','doughnut',['高绩效','中绩效','低绩效','无绩效'],[d.perf_high,d.perf_mid,d.perf_low,d.perf_none],C.perf);
+document.getElementById('t2').innerHTML=lb+' - 人才盘点结果分布 <span style="background:rgba(66,165,245,.2);color:#64b5f6;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:400">2026年人才盘点结果</span>';
+mkChart('c2','doughnut',['高潜型','稳健型','跟随型','无盘点结果'],[d.talent_high,d.talent_stable,d.talent_follow,d.talent_none],C.talent);
+document.getElementById('t3').textContent=lb+' - 司龄分布';
+mkBar('c3',['试用期','0-1年','1-3年','3-5年','5年以上'],[d.tenure_probation,d.tenure_0_1,d.tenure_1_3,d.tenure_3_5,d.tenure_5plus],[d.tenure_probation_pct,d.tenure_0_1_pct,d.tenure_1_3_pct,d.tenure_3_5_pct,d.tenure_5plus_pct],C.tenure);
+document.getElementById('t5').innerHTML=lb+' - 主动/被动离职 <span style="background:rgba(66,165,245,.2);color:#64b5f6;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:400">离职原因分布</span>';
+const passive=['能力不足','人员优化','工作态度','协商一致'];
+let passiveCount=0,activeCount=0;
+d.reasons.forEach(r=>{if(passive.includes(r.name))passiveCount+=r.count;else activeCount+=r.count;});
+mkChart('c5','doughnut',['主动离职','被动离职'],[activeCount,passiveCount],['#42a5f5','#ef5350']);
+mkBar('c4',d.reasons.map(r=>r.name),d.reasons.map(r=>r.count),d.reasons.map(r=>r.pct),C.reason);
+}
+
+function initTabs(){
+const bar=document.getElementById('deptTabs');
+const allNames=['all',...D.departments.map(d=>d.name)];
+const allLabels=['全部',...D.departments.map(d=>d.name)];
+allNames.forEach((name,i)=>{
+const btn=document.createElement('button');
+btn.className='tab-btn'+(i===0?' active':'');
+btn.textContent=allLabels[i];
+btn.dataset.value=name;
+btn.onclick=function(){
+const v=this.dataset.value;
+if(v==='all'){
+selectedBUs.clear();selectedBUs.add('all');
+document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+this.classList.add('active');
+}else{
+selectedBUs.delete('all');
+document.querySelector('.tab-btn[data-value="all"]').classList.remove('active');
+if(this.classList.contains('active')){this.classList.remove('active');selectedBUs.delete(v);}
+else{this.classList.add('active');selectedBUs.add(v);}
+if(selectedBUs.size===0){selectedBUs.add('all');document.querySelector('.tab-btn[data-value="all"]').classList.add('active');}
+}
+refreshAll();
+};
+bar.appendChild(btn);
+});
+}
+
+function renderTable(){
+const tb=document.getElementById('tblBody');
+const maxRate=Math.max(...D.departments.filter(d=>d.summary).map(d=>d.summary.turnover_rate));
+let h='';
+D.departments.forEach(dept=>{
+const s=dept.summary;if(!s)return;
+const isMax=Math.abs(s.turnover_rate-maxRate)<0.001;
+const dept2List=SUBDATA[dept.name];
+const hasSubs=dept2List&&dept2List.length>0;
+h+='<tr class="sum-r bu-row" data-bu="'+dept.name+'" onclick="toggleRow(this)">';
+h+='<td style="white-space:nowrap">'+(hasSubs?'<span class="expand-icon">&#9654;</span>':'<span style="display:inline-block;width:16px">&nbsp;</span>')+'<span style="font-weight:600;color:#64b5f6">'+dept.name+'</span></td>';
+h+='<td></td><td></td>';
+h+='<td>'+N(s.start)+'</td><td>'+N(s.hire)+'</td><td>'+N(s.leave)+'</td><td>'+(s.net>=0?'+':'')+N(s.net)+'</td><td>'+N(s.end)+'</td>';
+h+='<td'+(isMax?' class="rh"':'')+'>'+R(s.turnover_rate)+'</td></tr>';
+if(hasSubs){
+dept2List.forEach((d2,i)=>{
+const s2=d2.summary;
+const dept2Id=dept.name+'_d2_'+i;
+const hasSubs3=d2.dept3&&d2.dept3.length>0;
+h+='<tr class="dept2-row" data-dept2="'+dept2Id+'" data-parent-bu="'+dept.name+'" onclick="event.stopPropagation();toggleRow(this)">';
+h+='<td></td>';
+h+='<td>'+(hasSubs3?'<span class="expand-icon">&#9654;</span>':'<span style="display:inline-block;width:16px">&nbsp;</span>')+'<span style="font-weight:600;color:#90b4d4">'+d2.name+'</span></td>';
+h+='<td></td>';
+h+='<td>'+N(s2.start)+'</td><td>'+N(s2.hire)+'</td><td>'+N(s2.leave)+'</td><td>'+(s2.net>=0?'+':'')+N(s2.net)+'</td><td>'+N(s2.end)+'</td>';
+h+='<td'+'>'+R(s2.turnover_rate)+'</td></tr>';
+if(hasSubs3){
+d2.dept3.forEach(d3=>{
+h+='<tr class="dept3-row" data-parent-dept2="'+dept2Id+'">';
+h+='<td></td><td></td>';
+h+='<td>'+d3.name+'</td>';
+h+='<td>'+N(d3.start)+'</td><td>'+N(d3.hire)+'</td><td>'+N(d3.leave)+'</td><td>'+(d3.net>=0?'+':'')+N(d3.net)+'</td><td>'+N(d3.end)+'</td>';
+h+='<td>'+R(d3.turnover_rate)+'</td></tr>';
+});
+}
+});
+}
+});
+tb.innerHTML=h;
+}
+function toggleRow(row){
+row.classList.toggle('expanded');
+const icon=row.querySelector('.expand-icon');
+if(icon)icon.innerHTML=row.classList.contains('expanded')?'&#9660;':'&#9654;';
+const bu=row.dataset.bu;
+const dept2=row.dataset.dept2;
+const tb=document.getElementById('tblBody');
+if(bu){
+const subs=tb.querySelectorAll('.dept2-row[data-parent-bu="'+bu+'"]');
+subs.forEach(r=>r.classList.toggle('show'));
+}else if(dept2){
+const subs=tb.querySelectorAll('.dept3-row[data-parent-dept2="'+dept2+'"]');
+subs.forEach(r=>r.classList.toggle('show'));
+}
+}
+
+function renderSummary(){
+const t=D.total;
+const depts=[...D.departments].filter(d=>d.summary).sort((a,b)=>b.summary.turnover_rate-a.summary.turnover_rate);
+const topRates=depts.slice(0,3);
+const lowRates=[...depts].sort((a,b)=>a.summary.turnover_rate-b.summary.turnover_rate).slice(0,3);
+const biggest=[...depts].sort((a,b)=>b.summary.end-a.summary.end);
+const passiveTotal=t.reasons.filter(r=>['能力不足','人员优化','工作态度','协商一致'].includes(r.name)).reduce((s,r)=>s+r.count,0);
+const activeTotal=t.leave-passiveTotal;
+const probPct=(t.tenure_probation/t.leave*100).toFixed(0);
+const devPct=((t.reasons.find(r=>r.name==='发展因素')||{}).count/t.leave*100).toFixed(0);
+const top3Pct=(biggest.slice(0,3).reduce((s,d)=>s+d.summary.end,0)/t.end*100).toFixed(0);
+const abuDept=depts.find(d=>d.name==='ABU');
+const gusDept=depts.find(d=>d.name==='GUS');
+const h=[
+'<div style="margin-bottom:20px">',
+'<div style="font-size:16px;font-weight:600;color:#64b5f6;margin-bottom:12px;border-left:3px solid #42a5f5;padding-left:10px">一、核心数据概览</div>',
+'<p>截至2026年4月30日，集团正式工<b>期末在职 '+N(t.end)+' 人</b>，较年初（'+N(t.start)+'人）<b style="color:'+(t.net>=0?'#66bb6a':'#ef5350')+'">▲ 净增 '+(t.net>=0?'+':'')+N(t.net)+' 人</b>。',
+'累计入职 '+N(t.hire)+' 人，累计离职 '+N(t.leave)+' 人（主动 '+activeTotal+' / 被动 '+passiveTotal+'），',
+'整体离职率 <b style="color:#ef5350">'+R(t.turnover_rate)+'</b>。</p>',
+'<p style="margin-top:8px"><b>◆ 试用期内离职 '+N(t.tenure_probation)+' 人</b>（占离职总数 '+probPct+'%），为最大离职群体；',
+'离职首要原因为<b>发展因素</b>（'+N((t.reasons.find(r=>r.name==='发展因素')||{}).count||0)+'人 / '+devPct+'%），其次为能力不足（'+N((t.reasons.find(r=>r.name==='能力不足')||{}).count||0)+'人）。</p>',
+'</div>',
+'<div style="margin-bottom:20px">',
+'<div style="font-size:16px;font-weight:600;color:#64b5f6;margin-bottom:12px;border-left:3px solid #42a5f5;padding-left:10px">二、BU维度分析</div>',
+'<p><b style="color:#ef5350">■ 离职率前三</b>：'+topRates.map(d=>d.name+' <b style="color:#ef5350">'+R(d.summary.turnover_rate)+'</b>').join(' &nbsp;|&nbsp; ')+'。',
+'离职率最低：'+lowRates.map(d=>d.name+' <b>'+R(d.summary.turnover_rate)+'</b>').join(' &nbsp;|&nbsp; ')+'。</p>',
+'<p style="margin-top:8px"><b>■ 人员规模前三</b>：'+biggest.slice(0,3).map(d=>d.name+'（<b>'+N(d.summary.end)+'</b> 人）').join(' &nbsp;|&nbsp; ')+'，',
+'三BU合计占集团总人数 <b>'+top3Pct+'%</b>。</p>',
+'<p style="margin-top:8px">ABU航空事业部离职率最高（'+R(abuDept.summary.turnover_rate)+'），主要受<b>能力不足</b>因素驱动（占其离职人数 '+(abuDept.summary.reasons.find(r=>r.name==='能力不足')||{}).pct+'%），建议关注招聘质量与试用期带教培训。',
+'GUS美洲区入职 '+N(gusDept.summary.hire)+' 人为各BU之首，净增 '+N(gusDept.summary.net)+' 人，规模快速扩张中需同步关注人员留存。</p>',
+'</div>',
+'<div>',
+'<div style="font-size:16px;font-weight:600;color:#64b5f6;margin-bottom:12px;border-left:3px solid #42a5f5;padding-left:10px">三、管理建议</div>',
+'<p><b>◆ 试用期留存</b>：试用期离职占离职总数 '+probPct+'%，建议强化入职90天融入计划，建立导师带教与定期面谈机制。</p>',
+'<p><b>◆ 发展通道建设</b>：发展因素为第一大离职原因（'+devPct+'%），建议完善内部职级晋升体系与转岗机制，为员工提供清晰的成长路径。</p>',
+'<p><b>◆ ABU专项管控</b>：ABU离职率 '+R(abuDept.summary.turnover_rate)+' 远超集团均值（'+R(t.turnover_rate)+'），且能力不足被动离职占比近六成，建议从招聘标准、岗前技能认证、试用期考核三端联动改进。</p>',
+'<p><b>◆ GUS扩张节奏</b>：美洲区入职 '+N(gusDept.summary.hire)+' 人居各BU之首，需同步评估管理幅度与HRBP配比，防止规模扩张带来管理稀释。</p>',
+'</div>'
+];
+document.getElementById('summaryBody').innerHTML=h.join('');
+}
+
+function expandAll(){
+const tb=document.getElementById('tblBody');
+const dept2Rows=tb.querySelectorAll('.dept2-row');
+const dept3Rows=tb.querySelectorAll('.dept3-row');
+const buRows=tb.querySelectorAll('.bu-row');
+dept2Rows.forEach(r=>r.classList.add('show'));
+dept3Rows.forEach(r=>r.classList.add('show'));
+buRows.forEach(r=>{r.classList.add('expanded');const icon=r.querySelector('.expand-icon');if(icon)icon.innerHTML='&#9660;';});
+dept2Rows.forEach(r=>{if(r.querySelector('.expand-icon')){r.classList.add('expanded');const icon=r.querySelector('.expand-icon');if(icon)icon.innerHTML='&#9660;';}});
+}
+function collapseAll(){
+const tb=document.getElementById('tblBody');
+const dept2Rows=tb.querySelectorAll('.dept2-row');
+const dept3Rows=tb.querySelectorAll('.dept3-row');
+const buRows=tb.querySelectorAll('.bu-row');
+dept2Rows.forEach(r=>r.classList.remove('show'));
+dept3Rows.forEach(r=>r.classList.remove('show'));
+buRows.forEach(r=>{r.classList.remove('expanded');const icon=r.querySelector('.expand-icon');if(icon)icon.innerHTML='&#9654;';});
+dept2Rows.forEach(r=>{r.classList.remove('expanded');const icon=r.querySelector('.expand-icon');if(icon)icon.innerHTML='&#9654;';});
+}
+
+initTabs();refreshAll();renderTable();renderSummary();
+
+async function downloadPage(){
+const btn=document.getElementById('dlBtn');
+btn.style.display='none';
+try{
+const canvas=await html2canvas(document.documentElement,{
+backgroundColor:'#0c1929',
+scale:2,
+allowTaint:true,
+height:document.documentElement.scrollHeight,
+windowHeight:document.documentElement.scrollHeight
+});
+btn.style.display='';
+const link=document.createElement('a');
+link.download='2026年度集团全球入离职监测报告.png';
+link.href=canvas.toDataURL('image/png');
+link.click();
+}catch(e){
+btn.style.display='';
+alert('下载失败：'+e.message);
+}
+}
+</script>
+<button class="dl-btn" id="dlBtn" onclick="downloadPage()"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>下载报告</button>
+</body>
+</html>
